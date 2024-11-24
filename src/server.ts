@@ -1,7 +1,12 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { UserConnectData, UserDisconnectData, CallData, CallResponse } from './types';
+import {
+  UserConnectData,
+  UserDisconnectData,
+  CallData,
+  CallResponse
+} from './types';
 
 const app = express();
 const httpServer = createServer(app);
@@ -14,7 +19,10 @@ const io = new Server(httpServer, {
 });
 
 const activeCalls = new Map<string, CallData>();
-const userConnections = new Map<string, { maxCalls: number; currentCalls: number }>();
+const userConnections = new Map<
+  string,
+  { maxCalls: number; currentCalls: number }
+>();
 
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -27,7 +35,7 @@ io.on('connection', (socket) => {
       });
 
       socket.emit('USER_CONNECTED', data);
-      
+
       // Start sending random calls
       startSendingCalls(socket, data.username);
     } catch (error) {
@@ -93,7 +101,7 @@ io.on('connection', (socket) => {
 function startSendingCalls(socket: any, username: string) {
   const sendRandomCall = () => {
     const userInfo = userConnections.get(username);
-    
+
     if (userInfo && userInfo.currentCalls < userInfo.maxCalls) {
       const newCall: CallData = {
         callId: Math.random().toString(36).substring(7),
